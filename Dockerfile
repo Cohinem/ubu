@@ -15,6 +15,7 @@ RUN curl -sSL https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v${NGROK_VERSION}-linux
     mv ngrok /usr/bin/ && \
     rm ngrok.zip
 
+
 # Set up SSH
 RUN mkdir /var/run/sshd
 RUN echo 'root:password' | chpasswd
@@ -27,8 +28,8 @@ RUN echo "<h1>Hello, World!</h1>" > /var/www/html/index.html
 # Expose port 8080
 EXPOSE 8080
 
-CMD service nginx start && \
-    ngrok authtoken $NGROK_AUTHTOKEN && \
-    service ssh start && \
-    ngrok tcp 22 && \
-    tail -f /dev/null
+# Copy start script
+COPY start_services.sh /start_services.sh
+
+# Start SSH and Ngrok using a script
+CMD ["bash", "/start_services.sh"]
