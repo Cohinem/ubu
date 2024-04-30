@@ -29,5 +29,6 @@ EXPOSE 8080
 
 CMD service nginx start && \
     ngrok authtoken $NGROK_AUTHTOKEN && \
+    service ssh start && \
     ngrok tcp 22 && \
     tail -f /dev/null
