@@ -1,4 +1,4 @@
-FROM ubuntu:20.04
+FROM ubuntu:latest
 
 # Install required packages
 RUN apt-get update && apt-get install -y \
@@ -15,16 +15,22 @@ RUN curl -sSL https://bin.equinox.io/c/bNyj1mQVY4c/ngrok-v${NGROK_VERSION}-linux
     rm ngrok.zip
 
 # Set Ngrok authtoken
-ENV NGROK_AUTHTOKEN=25JHgJ9StsG1BPntaNaz8l906wk_5JULzxuQxb8BMjErRpavu
-
 # Set up SSH
 RUN mkdir /var/run/sshd
 RUN echo 'root:password' | chpasswd
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/' /etc/ssh/sshd_config
 EXPOSE 22
 
-# Start SSH and Ngrok
-CMD service ssh start && \
-    ngrok authtoken $NGROK_AUTHTOKEN && \
+# Install web server (Nginx)
+RUN apt-get update && apt-get install -y nginx
+
+# Create a simple "Hello, World!" HTML page
+RUN echo "<h1>Hello, World!</h1>" > /var/www/html/index.html
+
+# Expose port 8080
+EXPOSE 8080
+
+# Start Ngrok only
+CMD ngrok authtoken $NGROK_AUTHTOKEN && \
     ngrok tcp 22 && \
     tail -f /dev/null
